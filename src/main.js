@@ -55,9 +55,3 @@ bot.on('messageCreate', incomingMsg => {
 })
 
 bot.connect()
-
-module.exports = {
-  requestedCards,
-  cardsByName,
-  sanitize
-}
