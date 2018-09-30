@@ -1,20 +1,12 @@
 require('dotenv').config()
 
-const _ = require('lodash')
+const { requestedCards, sanitize } = require('./lib')
+
 const Eris = require('eris')
 
 const fs = require('fs')
 
 const CARD_DATA_SOURCE = 'assets/eternal-cards-1.38.json'
-const MAX_CARDS_TO_RETURN = 5
-
-function requestedCards (query) {
-  const matcher = /{{([^}]+)}}/g
-  const results = []
-  let match
-  while ((match = matcher.exec(query))) results.push(match[1])
-  return _.uniq(results.map(sanitize).slice(0, MAX_CARDS_TO_RETURN))
-}
 
 function cardsByName () {
   const data = JSON.parse(fs.readFileSync(CARD_DATA_SOURCE))
@@ -25,14 +17,6 @@ function cardsByName () {
     byName[sanitizedName] = cardData
   })
   return byName
-}
-
-function sanitize (name) {
-  name = name.toLowerCase()
-  name = name.trim()
-  name = name.replace(/[^\w\s]/g, '') // strip non-alphanumeric
-  name = name.replace(/\s\s+/g, ' ') // replace multiple spaces with one space
-  return name
 }
 
 const cardDb = cardsByName()
@@ -71,3 +55,9 @@ bot.on('messageCreate', incomingMsg => {
 })
 
 bot.connect()
+
+module.exports = {
+  requestedCards,
+  cardsByName,
+  sanitize
+}
