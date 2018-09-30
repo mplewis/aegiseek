@@ -1,4 +1,29 @@
-const { requestedCards, sanitize } = require('./lib')
+const { cardsByName, requestedCards, sanitize } = require('./lib')
+
+describe('cardsByName', () => {
+  describe('given cards in the Eternal Warcry JSON format', () => {
+    const rawCards = [
+      { Name: 'Valkyrie Enforcer', Cost: 3, Attack: 3, Health: 3 },
+      { Name: 'Serpent Hatchling', Cost: 2, Attack: 2, Health: 2 }
+    ]
+    it('keys cards by sanitized name', () => {
+      expect(cardsByName(rawCards)).toEqual({
+        'valkyrie enforcer': {
+          Name: 'Valkyrie Enforcer',
+          Cost: 3,
+          Attack: 3,
+          Health: 3
+        },
+        'serpent hatchling': {
+          Name: 'Serpent Hatchling',
+          Cost: 2,
+          Attack: 2,
+          Health: 2
+        }
+      })
+    })
+  })
+})
 
 describe('requestedCards', () => {
   describe('with no requests', () => {

@@ -2,6 +2,16 @@ const _ = require('lodash')
 
 const MAX_CARDS_TO_RETURN = 5
 
+function cardsByName (cardsData) {
+  const byName = {}
+  cardsData.forEach(cardData => {
+    const originalName = cardData['Name']
+    const sanitizedName = sanitize(originalName)
+    byName[sanitizedName] = cardData
+  })
+  return byName
+}
+
 function requestedCards (query) {
   const matcher = /{{([^}]+)}}/g
   const results = []
@@ -19,6 +29,7 @@ function sanitize (name) {
 }
 
 module.exports = {
+  cardsByName,
   requestedCards,
   sanitize
 }

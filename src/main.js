@@ -1,25 +1,13 @@
 require('dotenv').config()
 
-const { requestedCards, sanitize } = require('./lib')
-
+const { requestedCards, cardsByName } = require('./lib')
 const Eris = require('eris')
-
 const fs = require('fs')
 
 const CARD_DATA_SOURCE = 'assets/eternal-cards-1.38.json'
 
-function cardsByName () {
-  const data = JSON.parse(fs.readFileSync(CARD_DATA_SOURCE))
-  const byName = {}
-  data.forEach(cardData => {
-    const originalName = cardData['Name']
-    const sanitizedName = sanitize(originalName)
-    byName[sanitizedName] = cardData
-  })
-  return byName
-}
-
-const cardDb = cardsByName()
+const cardData = JSON.parse(fs.readFileSync(CARD_DATA_SOURCE))
+const cardDb = cardsByName(cardData)
 console.log(`${Object.keys(cardDb).length} cards loaded`)
 
 const bot = new Eris(process.env.DISCORD_BOT_TOKEN)
