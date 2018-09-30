@@ -1,51 +1,25 @@
-const getJSON = require('get-json')
+require('dotenv').config()
+
+const _ = require('lodash')
 const Eris = require('eris')
-const axios = require('axios')
 
-const CARD_DATA_SOURCE = 'https://cdn.glitch.com/a2e17b52-f40b-4236-8302-cde69ff404b2%2Feternal-cards.json'
-let cardDb
+const fs = require('fs')
 
-const bot = new Eris(process.env.SECRET)
+const CARD_DATA_SOURCE = 'assets/eternal-cards-1.38.json'
+const MAX_CARDS_TO_RETURN = 5
 
-bot.on('ready', () => {
-  console.log('Ready!')
-  cardsByName().then(organized => {
-    cardDb = organized
-    console.log(`${Object.keys(cardDb).length} cards loaded`)
-  })
-})
-
-bot.on('messageCreate', (msg) => {
-  console.log(msg.content)
-  requestedCards(msg).forEach(name => {
-    const data = cardDb[name]
-    console.log({name, data})
-    
-    let response
-    if (data) {
-      response = data['DetailsUrl']
-    } else {
-      response = `Could not find a card named "${name}"`
-    }
-    
-    bot.createMessage(msg.channel.id, response) 
-  })
-})
-
-function requestedCards(msg) {
-  const query = msg.content
-  const matcher = /{{(.+)}}/g
+function requestedCards (query) {
+  const matcher = /{{([^}]+)}}/g
   const results = []
-
   let match
-  while (match = matcher.exec(query)) { results.push(match[1]) }
-  return results.map(sanitize)
+  while ((match = matcher.exec(query))) results.push(match[1])
+  return _.uniq(results.map(sanitize).slice(0, MAX_CARDS_TO_RETURN))
 }
 
-async function cardsByName() {
-  const response = await axios(CARD_DATA_SOURCE)
+function cardsByName () {
+  const data = JSON.parse(fs.readFileSync(CARD_DATA_SOURCE))
   const byName = {}
-  response.data.forEach(cardData => {
+  data.forEach(cardData => {
     const originalName = cardData['Name']
     const sanitizedName = sanitize(originalName)
     byName[sanitizedName] = cardData
@@ -53,12 +27,47 @@ async function cardsByName() {
   return byName
 }
 
-function sanitize(name) {
+function sanitize (name) {
   name = name.toLowerCase()
   name = name.trim()
   name = name.replace(/[^\w\s]/g, '') // strip non-alphanumeric
   name = name.replace(/\s\s+/g, ' ') // replace multiple spaces with one space
   return name
 }
+
+const cardDb = cardsByName()
+console.log(`${Object.keys(cardDb).length} cards loaded`)
+
+const bot = new Eris(process.env.DISCORD_BOT_TOKEN)
+
+function send (replyTo, text) {
+  bot.createMessage(replyTo.channel.id, text)
+  console.log(`< ${text}`)
+}
+
+bot.on('ready', () => console.log('Ready!'))
+
+bot.on('messageCreate', incomingMsg => {
+  const text = incomingMsg.content
+  console.log(`> ${text}`)
+  const cards = requestedCards(text)
+
+  if (cards.length === 0) return
+  console.log(`Found requests for cards: ${cards.join(', ')}`)
+
+  const urls = []
+  const errorNames = []
+
+  cards.forEach(name => {
+    const data = cardDb[name]
+    if (data) urls.push(data['DetailsUrl'])
+    else errorNames.push(name)
+  })
+
+  if (urls.length > 0) send(incomingMsg, urls.join('\n'))
+  if (errorNames.length > 0) {
+    send(incomingMsg, `Could not find any card named ${errorNames.join(', ')}`)
+  }
+})
 
 bot.connect()
