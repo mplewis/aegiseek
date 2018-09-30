@@ -4,15 +4,15 @@
   "license": "MIT",
   "main": "src/main.js",
   "scripts": {
-    "fix": "yarn lint --fix",
     "lint": "eslint src",
+    "prettify": "prettier-eslint --write 'src/**/*.js'",
     "start": "node src/main.js",
     "test": "jest --watch",
     "test-once": "jest"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn fix"
+      "pre-commit": "yarn prettify; yarn lint"
     }
   },
   "dependencies": {
@@ -29,6 +29,9 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "husky": "^1.0.1",
-    "jest": "^23.6.0"
+    "jest": "^23.6.0",
+    "prettier": "^1.14.3",
+    "prettier-eslint": "^8.8.2",
+    "prettier-eslint-cli": "^4.7.1"
   }
 }
