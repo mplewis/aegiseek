@@ -1,0 +1,115 @@
+dependencies:
+  axios: 0.18.0
+  eris: 0.7.2
+  get-json: 1.0.0
+packages:
+  /async-limiter/1.0.0:
+    dev: false
+    resolution:
+      integrity: sha512-jp/uFnooOiO+L211eZOoSyzpOITMXx1rBITauYykG3BRYPu8h0UcxsPNB04RR5vo4Tyz3+ay17tR6JVf9qzYWg==
+  /axios/0.18.0:
+    dependencies:
+      follow-redirects: 1.5.8
+      is-buffer: 1.1.6
+    dev: false
+    resolution:
+      integrity: sha1-MtU+SFHv3AoRmTts0AB4nXDAUQI=
+      tarball: 'http://registry.npmjs.org/axios/-/axios-0.18.0.tgz'
+  /debug/3.1.0:
+    dependencies:
+      ms: 2.0.0
+    dev: false
+    resolution:
+      integrity: sha512-OX8XqP7/1a9cqkxYw2yXss15f26NKWBpDXQd0/uK/KPqdQhxbPa994hnzjcE2VqQpDslf55723cKPUOGSmMY3g==
+  /debug/4.0.1:
+    dependencies:
+      ms: 2.1.1
+    dev: false
+    resolution:
+      integrity: sha512-K23FHJ/Mt404FSlp6gSZCevIbTMLX0j3fmHhUEhQ3Wq0FMODW3+cUSoLdy1Gx4polAf4t/lphhmHH35BB8cLYw==
+  /eris/0.7.2:
+    dependencies:
+      ws: 3.3.3
+    dev: false
+    engines:
+      node: '>=4.0.0'
+    optionalDependencies:
+      opusscript: 0.0.3
+      tweetnacl: 1.0.0
+    resolution:
+      integrity: sha512-YcgXHH81tk9/nbnwZZ47cQVtaAySjIJi/JJFt0lbIMTHhHa77zo682nLIJrBbU5P8u9LQUbWoqiFA/NabR3qww==
+  /follow-redirects/1.5.8:
+    dependencies:
+      debug: 3.1.0
+    dev: false
+    engines:
+      node: '>=4.0'
+    resolution:
+      integrity: sha512-sy1mXPmv7kLAMKW/8XofG7o9T+6gAjzdZK4AJF6ryqQYUa/hnzgiypoeUecZ53x7XiqKNEpNqLtS97MshW2nxg==
+  /get-json/1.0.0:
+    dependencies:
+      is-node: 0.0.0
+      jsonp: 0.0.4
+      phin: 2.9.2
+    dev: false
+    resolution:
+      integrity: sha512-hrKUsgCR/UYJ4u+g1ImS2GyQy6GbE5hXd5C8zwZvwzPaEf8M1C+dTi2WKDtwaCevy2Z1wepK0+hErZGXEQr6hA==
+  /is-buffer/1.1.6:
+    dev: false
+    resolution:
+      integrity: sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==
+  /is-node/0.0.0:
+    dev: false
+    resolution:
+      integrity: sha1-h91lC4f7ajnFDKr+4On2g17BXkE=
+  /jsonp/0.0.4:
+    dependencies:
+      debug: 4.0.1
+    dev: false
+    resolution:
+      integrity: sha1-lGZaS3caq+y4qshBNbmVlHVpGL0=
+  /ms/2.0.0:
+    dev: false
+    resolution:
+      integrity: sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g=
+  /ms/2.1.1:
+    dev: false
+    resolution:
+      integrity: sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
+  /opusscript/0.0.3:
+    dev: false
+    optional: true
+    resolution:
+      integrity: sha1-zkZxf8jW+QHFGR5pSFyImgNqhnQ=
+  /phin/2.9.2:
+    dev: false
+    resolution:
+      integrity: sha512-j+UOz1qs+k8NlBRws2IF+Qd+YsVKcqIjvYPBEP9IpmhyvLvyN6GTuqsGbsqH3fIgHufqVqLQSttidIgshkgT7w==
+  /safe-buffer/5.1.2:
+    dev: false
+    resolution:
+      integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==
+  /tweetnacl/1.0.0:
+    dev: false
+    optional: true
+    resolution:
+      integrity: sha1-cT2LgY2kIGh0C/aDhtBHnmb8ins=
+  /ultron/1.1.1:
+    dev: false
+    resolution:
+      integrity: sha512-UIEXBNeYmKptWH6z8ZnqTeS8fV74zG0/eRU9VGkpzz+LIJNs8W/zM/L+7ctCkRrgbNnnR0xxw4bKOr0cW0N0Og==
+  /ws/3.3.3:
+    dependencies:
+      async-limiter: 1.0.0
+      safe-buffer: 5.1.2
+      ultron: 1.1.1
+    dev: false
+    resolution:
+      integrity: sha512-nnWLa/NwZSt4KQJu51MYlCcSQ5g7INpOrOMt4XV8j4dqTXdmlUmSHQ8/oLC069ckre0fRsgfvsKwbTdtKLCDkA==
+registry: 'https://registry.npmjs.org/'
+shrinkwrapMinorVersion: 9
+shrinkwrapVersion: 3
+specifiers:
+  axios: ^0.18.0
+  eris: ^0.7.2
+  get-json: ^1.0.0

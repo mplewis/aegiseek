@@ -6,7 +6,9 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "eris": "^0.7.2"
+    "eris": "^0.7.2",
+    "get-json": "^1.0.0",
+    "axios": "^0.18.0"
   },
   "engines": {
     "node": "9.x"
