@@ -24,9 +24,9 @@ function fetchUniqueName (name, cardDB) {
   if (name in cardDB) {
     return name
   } else {
-    let matches = Object.keys(cardDB).filter(cardName => {
+    const matches = Object.keys(cardDB).filter(cardName =>
       cardName.includes(name)
-    })
+    )
 
     if (matches.length === 1) return matches[0]
     else return null
