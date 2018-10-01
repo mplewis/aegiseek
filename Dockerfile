@@ -5,4 +5,4 @@ COPY . .
 
 RUN yarn install --production
 
-CMD ["yarn", "start"]
+CMD ["yarn", "start-forever"]
