@@ -1,26 +1,9 @@
-require('dotenv').config()
-
-const { requestedCards, cardsByName } = require('./lib')
-const { onMessageCreate } = require('behavior')
-const Eris = require('eris')
-const fs = require('fs')
-
-const CARD_DATA_SOURCE = 'assets/eternal-cards-1.38.json'
-
-const cardData = JSON.parse(fs.readFileSync(CARD_DATA_SOURCE))
-const cardDb = cardsByName(cardData)
-console.log(`${Object.keys(cardDb).length} cards loaded`)
-
-const bot = new Eris(process.env.DISCORD_BOT_TOKEN)
-
-function send (replyTo, text) {
+function send (bot, replyTo, text) {
   bot.createMessage(replyTo.channel.id, text)
   console.log(`< ${text}`)
 }
 
-bot.on('ready', () => console.log('Ready!'))
-
-bot.on('messageCreate', incomingMsg => {
+function onMessageCreate (bot, incomingMsg) {
   const text = incomingMsg.content
   console.log(`> ${text}`)
   const cards = requestedCards(text)
@@ -41,6 +24,6 @@ bot.on('messageCreate', incomingMsg => {
   if (errorNames.length > 0) {
     send(incomingMsg, `Could not find any card named ${errorNames.join(', ')}`)
   }
-})
+}
 
-bot.connect()
+module.exports = { onMessageCreate }
