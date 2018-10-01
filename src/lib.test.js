@@ -1,4 +1,9 @@
-const { cardsByName, requestedCards, sanitize } = require('./lib')
+const {
+  cardsByName,
+  requestedCards,
+  fetchUniqueName,
+  sanitize
+} = require('./lib')
 
 describe('cardsByName', () => {
   describe('given cards in the Eternal Warcry JSON format', () => {
@@ -60,6 +65,40 @@ describe('requestedCards', () => {
         'end of hostilities',
         'skycrag wyvarch'
       ])
+    })
+  })
+})
+
+describe('fetchUniqueName', () => {
+  const sampleCardData = {
+    'fire sigil': null,
+    'shadow sigil': null,
+    'time sigil': null
+  }
+
+  describe('matching string', () => {
+    it('returns the string back', () => {
+      expect(fetchUniqueName('fire sigil', sampleCardData)).toEqual(
+        'fire sigil'
+      )
+    })
+  })
+
+  describe('not unique substring', () => {
+    it('returns null', () => {
+      expect(fetchUniqueName('sigil', sampleCardData)).toEqual(null)
+    })
+  })
+
+  describe('unique substring', () => {
+    it('returns full sanitized card name', () => {
+      expect(fetchUniqueName('fire', sampleCardData)).toEqual('fire sigil')
+    })
+  })
+
+  describe('no substring', () => {
+    it('returns null', () => {
+      expect(fetchUniqueName('not a card', sampleCardData)).toEqual(null)
     })
   })
 })

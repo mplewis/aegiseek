@@ -20,6 +20,19 @@ function requestedCards (query) {
   return _.uniq(results.map(sanitize).slice(0, MAX_CARDS_TO_RETURN))
 }
 
+function fetchUniqueName (name, cardDB) {
+  if (name in cardDB) {
+    return name
+  } else {
+    let matches = Object.keys(cardDB).filter(cardName => {
+      cardName.includes(name)
+    })
+
+    if (matches.length === 1) return matches[0]
+    else return null
+  }
+}
+
 function sanitize (name) {
   name = name.toLowerCase()
   name = name.trim()
@@ -31,5 +44,6 @@ function sanitize (name) {
 module.exports = {
   cardsByName,
   requestedCards,
+  fetchUniqueName,
   sanitize
 }
