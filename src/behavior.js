@@ -1,6 +1,29 @@
+const {
+  requestedCards,
+  fetchUniqueName
+} = require('./lib')
+
 function send (bot, replyTo, text) {
-  bot.createMessage(replyTo.channel.id, text)
+  var messagePromise = bot.createMessage(replyTo.channel.id, text)
   console.log(`< ${text}`)
+  return messagePromise
+}
+
+function fetchUrls(cards, cardDb) {
+  const urls = []
+  const errorNames = []
+
+  cards.forEach(name => {
+    const fullName = fetchUniqueName(name, cardDb)
+
+    if (fullName) urls.push(cardDb[fullName]['DetailsUrl'])
+    else errorNames.push(name)
+  })
+
+  return {
+    urls: urls,
+    errors: errorNames
+  }
 }
 
 function onMessageCreate (bot, incomingMsg) {
@@ -11,19 +34,12 @@ function onMessageCreate (bot, incomingMsg) {
   if (cards.length === 0) return
   console.log(`Found requests for cards: ${cards.join(', ')}`)
 
-  const urls = []
-  const errorNames = []
+  const found = fetchUrls(cards, cardDb)
 
-  cards.forEach(name => {
-    const data = cardDb[name]
-    if (data) urls.push(data['DetailsUrl'])
-    else errorNames.push(name)
-  })
-
-  if (urls.length > 0) send(incomingMsg, urls.join('\n'))
-  if (errorNames.length > 0) {
-    send(incomingMsg, `Could not find any card named ${errorNames.join(', ')}`)
+  if (found.urls.length > 0) send(bot, incomingMsg, urls.join('\n'))
+  if (found.errors.length > 0) {
+    send(bot, incomingMsg, `Could not find any card named ${errorNames.join(', ')}`)
   }
 }
 
-module.exports = { onMessageCreate }
+module.exports = { onMessageCreate, fetchUrls, send }
