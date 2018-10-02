@@ -1,46 +1,34 @@
 const { requestedCards, fetchUniqueName } = require('./lib')
 
-function send (bot, replyTo, text) {
-  var messagePromise = bot.createMessage(replyTo.channel.id, text)
-  console.log(`< ${text}`)
-  return messagePromise
-}
-
-function fetchUrls (cards, cardDb) {
+// TODO: Move to lib
+function urlsForCards (cards, cardDb) {
   const urls = []
-  const errorNames = []
+  const errors = []
 
   cards.forEach(name => {
     const fullName = fetchUniqueName(name, cardDb)
-
     if (fullName) urls.push(cardDb[fullName]['DetailsUrl'])
-    else errorNames.push(name)
+    else errors.push(name)
   })
 
-  return {
-    urls: urls,
-    errors: errorNames
-  }
+  return { urls, errors }
 }
 
-function onMessageCreate (bot, incomingMsg, cardDb) {
-  const text = incomingMsg.content
-  console.log(`> ${text}`)
-  const cards = requestedCards(text)
+function replyWithCards ({ cardDb, msgText }) {
+  const messages = []
 
-  if (cards.length === 0) return
+  const cards = requestedCards(msgText)
+  if (cards.length === 0) return []
   console.log(`Found requests for cards: ${cards.join(', ')}`)
 
-  const found = fetchUrls(cards, cardDb)
-
-  if (found.urls.length > 0) send(bot, incomingMsg, found.urls.join('\n'))
-  if (found.errors.length > 0) {
-    send(
-      bot,
-      incomingMsg,
-      `Could not find any card named ${found.errors.join(', ')}`
-    )
+  const { urls, errors } = urlsForCards(cards, cardDb)
+  if (urls.length > 0) messages.push(urls.join(' '))
+  if (errors.length > 0) {
+    const s = errors.length === 1 ? '' : 's'
+    messages.push(`Could not find any card${s} named ${errors.join(', ')}`)
   }
+
+  return messages
 }
 
-module.exports = { onMessageCreate, fetchUrls, send }
+module.exports = { replyWithCards, urlsForCards }
