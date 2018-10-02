@@ -1,7 +1,4 @@
-const {
-  requestedCards,
-  fetchUniqueName
-} = require('./lib')
+const { requestedCards, fetchUniqueName } = require('./lib')
 
 function send (bot, replyTo, text) {
   var messagePromise = bot.createMessage(replyTo.channel.id, text)
@@ -9,7 +6,7 @@ function send (bot, replyTo, text) {
   return messagePromise
 }
 
-function fetchUrls(cards, cardDb) {
+function fetchUrls (cards, cardDb) {
   const urls = []
   const errorNames = []
 
@@ -26,7 +23,7 @@ function fetchUrls(cards, cardDb) {
   }
 }
 
-function onMessageCreate (bot, incomingMsg) {
+function onMessageCreate (bot, incomingMsg, cardDb) {
   const text = incomingMsg.content
   console.log(`> ${text}`)
   const cards = requestedCards(text)
@@ -36,9 +33,13 @@ function onMessageCreate (bot, incomingMsg) {
 
   const found = fetchUrls(cards, cardDb)
 
-  if (found.urls.length > 0) send(bot, incomingMsg, urls.join('\n'))
+  if (found.urls.length > 0) send(bot, incomingMsg, found.urls.join('\n'))
   if (found.errors.length > 0) {
-    send(bot, incomingMsg, `Could not find any card named ${errorNames.join(', ')}`)
+    send(
+      bot,
+      incomingMsg,
+      `Could not find any card named ${found.errors.join(', ')}`
+    )
   }
 }
 

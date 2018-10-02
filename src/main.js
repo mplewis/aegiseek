@@ -16,7 +16,7 @@ const bot = new Eris(process.env.DISCORD_BOT_TOKEN)
 bot.on('ready', () => console.log('Ready!'))
 
 bot.on('messageCreate', incomingMsg => {
-  onMessageCreate(bot, incomingMsg)
+  onMessageCreate(bot, incomingMsg, cardDb)
 })
 
 bot.connect()
