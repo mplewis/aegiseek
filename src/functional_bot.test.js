@@ -2,28 +2,51 @@ const { createBot } = require('./functional_bot')
 
 describe('FunctionalBot createBot', () => {
   def('sentMessages', () => [])
-  def('erisRegister', () => jest.fn())
+  def('registeredHandlers', () => ({}))
   def('mockEris', () => ({
-    on: get.erisRegister,
-    createMessage: created => get.sentMessages.push(created)
+    on: (name, fn) => (get.registeredHandlers[name] = fn),
+    createMessage: (channelId, text) =>
+      get.sentMessages.push({ channelId, text })
   }))
-  def('onReady', () => jest.fn())
-  def('bot', () =>
-    createBot({
-      onReady: get.onReady,
-      responsesForMessage: get.responsesForMessage,
-      erisInstance: get.mockEris
-    })
-  )
 
   describe('creating the bot', () => {
-    subject(() => get.bot)
+    def('onReady', () => jest.fn())
+    beforeEach(() => {
+      createBot({
+        erisInstance: get.mockEris,
+        onReady: get.onReady,
+        responsesForMessage: get.responsesForMessage
+      })
+    })
 
     it('registers the handlers', () => {
       subject()
-      const calls = get.erisRegister.mock.calls
-      expect(calls[0]).toEqual(['ready', get.onReady])
-      expect(calls[1][0]).toEqual('messageCreate')
+      expect(Object.keys(get.registeredHandlers)).toEqual([
+        'ready',
+        'messageCreate'
+      ])
+      expect(get.registeredHandlers.ready).toEqual(get.onReady)
+    })
+
+    describe('responding to messages with multiple messages', () => {
+      def('responsesForMessage', () => msg => {
+        const input = msg.content
+        return [`${input}?`, `${input}!`]
+      })
+      subject(() =>
+        get.registeredHandlers.messageCreate({
+          channel: { id: 1234 },
+          content: 'hello'
+        })
+      )
+
+      it('sends the expected messages', () => {
+        subject()
+        expect(get.sentMessages).toEqual([
+          { channelId: 1234, text: 'hello?' },
+          { channelId: 1234, text: 'hello!' }
+        ])
+      })
     })
   })
 })

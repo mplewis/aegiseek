@@ -16,9 +16,9 @@ function createBot ({
   bot.on('ready', onReady)
   bot.on('messageCreate', function (incomingMsg) {
     console.log(`> ${incomingMsg.content}`)
-    responsesForMessage(incomingMsg).forEach(text =>
-      send({ replyTo: incomingMsg, text })
-    )
+    const responses = responsesForMessage(incomingMsg)
+    if (!responses) return
+    responses.forEach(text => send({ replyTo: incomingMsg, text }))
   })
 
   return bot
