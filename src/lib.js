@@ -41,9 +41,23 @@ function sanitize (name) {
   return name
 }
 
+function urlsForCards (cards, cardDb) {
+  const urls = []
+  const errors = []
+
+  cards.forEach(name => {
+    const fullName = fetchUniqueName(name, cardDb)
+    if (fullName) urls.push(cardDb[fullName]['DetailsUrl'])
+    else errors.push(name)
+  })
+
+  return { urls, errors }
+}
+
 module.exports = {
   cardsByName,
   requestedCards,
   fetchUniqueName,
-  sanitize
+  sanitize,
+  urlsForCards
 }

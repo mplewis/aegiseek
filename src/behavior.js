@@ -1,18 +1,4 @@
-const { requestedCards, fetchUniqueName } = require('./lib')
-
-// TODO: Move to lib
-function urlsForCards (cards, cardDb) {
-  const urls = []
-  const errors = []
-
-  cards.forEach(name => {
-    const fullName = fetchUniqueName(name, cardDb)
-    if (fullName) urls.push(cardDb[fullName]['DetailsUrl'])
-    else errors.push(name)
-  })
-
-  return { urls, errors }
-}
+const { requestedCards, urlsForCards } = require('./lib')
 
 function replyWithCards ({ cardDb, msgText }) {
   const messages = []
@@ -31,4 +17,4 @@ function replyWithCards ({ cardDb, msgText }) {
   return messages
 }
 
-module.exports = { replyWithCards, urlsForCards }
+module.exports = { replyWithCards }
