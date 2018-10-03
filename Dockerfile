@@ -1,8 +1,11 @@
 FROM mhart/alpine-node:10.11.0
 
 WORKDIR /app
-COPY . .
 
+COPY package.json .
+COPY yarn.lock .
 RUN yarn install --production
 
-CMD ["yarn", "start-forever"]
+COPY . .
+
+CMD ["sh", "forever.sh"]
