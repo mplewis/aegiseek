@@ -12,12 +12,19 @@ const cardDb = {
   }
 }
 
+const allCards = [
+  { Name: 'Fire Sigil' },
+  { Name: 'Time Sigil' },
+  { Name: 'Wisdom of the Elders' }
+]
+
 describe('replyWithCards', () => {
   it('does not answer none', () => {
     expect(
       replyWithCards({
         msgText: 'One With Nothing is the best MTG card',
-        cardDb
+        cardDb,
+        allCards
       })
     ).toEqual([])
   })
@@ -26,7 +33,8 @@ describe('replyWithCards', () => {
     expect(
       replyWithCards({
         msgText: 'Start with {{Fire Sigil}}',
-        cardDb
+        cardDb,
+        allCards
       })
     ).toEqual(['firesigil.html'])
   })
@@ -35,7 +43,8 @@ describe('replyWithCards', () => {
     expect(
       replyWithCards({
         msgText: 'Then play {{Fire Sigil}} and {{Wisdom of the Elders}}',
-        cardDb
+        cardDb,
+        allCards
       })
     ).toEqual(['firesigil.html wisdom.html'])
   })
@@ -43,10 +52,13 @@ describe('replyWithCards', () => {
   it('answers errors', () => {
     expect(
       replyWithCards({
-        msgText: 'Next play {{Time Walk}} and {{Black Lotus}}',
-        cardDb
+        msgText: 'Next play {{Sword of Feast and Famine}} and {{Black Lotus}}',
+        cardDb,
+        allCards
       })
-    ).toEqual(['Could not find any cards named time walk, black lotus'])
+    ).toEqual([
+      'Could not find any cards named sword of feast and famine, black lotus'
+    ])
   })
 
   it('answers everything', () => {
@@ -54,7 +66,8 @@ describe('replyWithCards', () => {
       replyWithCards({
         msgText:
           'Then play {{Fire Sigil}} and {{Time Sigil}} followed by {{Ancestral Recall}} and {{Emrakul, the Aeons Torn}}',
-        cardDb
+        cardDb,
+        allCards
       })
     ).toEqual([
       'firesigil.html timesigil.html',

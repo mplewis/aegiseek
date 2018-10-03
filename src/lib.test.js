@@ -167,41 +167,64 @@ describe('urlsForCards', () => {
     }
   }
 
+  const allCards = [
+    { Name: 'Fire Sigil' },
+    { Name: 'Time Sigil' },
+    { Name: 'Wisdom of the Elders' }
+  ]
+
   describe('single fetch', () => {
-    const cards = ['fire sigil']
+    const queries = ['fire sigil']
     it('returns one url', () => {
-      expect(urlsForCards(cards, cardDb)).toEqual({
-        urls: ['firesigil.html'],
+      expect(urlsForCards({ queries, cardDb, allCards })).toEqual({
+        matchingUrls: ['firesigil.html'],
+        queriesWithFuzzyMatches: [],
         errors: []
       })
     })
   })
 
   describe('triple fetch', () => {
-    const cards = ['fire sigil', 'time sigil', 'wisdom of the elders']
+    const queries = ['fire sigil', 'time sigil', 'wisdom of the elders']
     it('returns all 3 urls', () => {
-      expect(urlsForCards(cards, cardDb)).toEqual({
-        urls: ['firesigil.html', 'timesigil.html', 'wisdom.html'],
+      expect(urlsForCards({ queries, cardDb, allCards })).toEqual({
+        matchingUrls: ['firesigil.html', 'timesigil.html', 'wisdom.html'],
+        queriesWithFuzzyMatches: [],
         errors: []
       })
     })
   })
 
   describe('bad fetch', () => {
-    const cards = ['not a card']
+    const queries = ['not a card']
     it('fills error array', () => {
-      expect(urlsForCards(cards, cardDb)).toEqual({
-        urls: [],
+      expect(urlsForCards({ queries, cardDb, allCards })).toEqual({
+        matchingUrls: [],
+        queriesWithFuzzyMatches: [],
         errors: ['not a card']
       })
     })
   })
 
+  describe('fuzzy match', () => {
+    const queries = ['fira signal']
+    it('fills error array', () => {
+      expect(urlsForCards({ queries, cardDb, allCards })).toEqual({
+        matchingUrls: [],
+        queriesWithFuzzyMatches: [
+          { query: 'fira signal', result: { Name: 'Fire Sigil' } }
+        ],
+        errors: []
+      })
+    })
+  })
+
   describe('bad and good fetch', () => {
-    const cards = ['time sigil', 'not a card', 'fire sigil']
+    const queries = ['time sigil', 'not a card', 'fire sigil']
     it('only good goes through', () => {
-      expect(urlsForCards(cards, cardDb)).toEqual({
-        urls: ['timesigil.html', 'firesigil.html'],
+      expect(urlsForCards({ queries, cardDb, allCards })).toEqual({
+        matchingUrls: ['timesigil.html', 'firesigil.html'],
+        queriesWithFuzzyMatches: [],
         errors: ['not a card']
       })
     })

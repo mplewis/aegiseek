@@ -58,28 +58,28 @@ function fuzzySearch (query, allCards) {
   return results[0]
 }
 
-function urlsForCards ({ cards, cardDb, allCards }) {
+function urlsForCards ({ queries, cardDb, allCards }) {
   const matchingUrls = []
   const queriesWithFuzzyMatches = []
   const errors = []
 
-  cards.forEach(name => {
-    const fullName = fetchUniqueName(name, cardDb)
+  queries.forEach(query => {
+    const fullName = fetchUniqueName(query, cardDb)
     if (fullName) {
       matchingUrls.push(cardDb[fullName]['DetailsUrl'])
       return
     }
 
-    const maybeUrl = fuzzySearch(name, allCards)
-    if (maybeUrl) {
-      queriesWithFuzzyMatches.push({ query: name, maybeUrl })
+    const result = fuzzySearch(query, allCards)
+    if (result) {
+      queriesWithFuzzyMatches.push({ query: query, result })
       return
     }
 
-    errors.push(name)
+    errors.push(query)
   })
 
-  return { matchingUrls, errors }
+  return { matchingUrls, queriesWithFuzzyMatches, errors }
 }
 
 module.exports = {
