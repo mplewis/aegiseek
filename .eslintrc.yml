@@ -5,3 +5,7 @@ plugins:
   - jest
 env:
   jest/globals: true
+globals:
+  def: false
+  get: false
+  subject: false
