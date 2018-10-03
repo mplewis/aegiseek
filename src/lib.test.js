@@ -3,6 +3,7 @@ const {
   requestedCards,
   fetchUniqueName,
   sanitize,
+  fuzzySearch,
   urlsForCards
 } = require('./lib')
 
@@ -109,6 +110,47 @@ describe('sanitize', () => {
     expect(sanitize('   WISDOM Of the* \t Elders ')).toEqual(
       'wisdom of the elders'
     )
+  })
+})
+
+describe('fuzzySearch', () => {
+  const allCards = [
+    { Name: 'Umbren Deathwatcher' },
+    { Name: "Duelist's Blade" },
+    { Name: 'Dueling Pistols' },
+    { Name: 'Soaring Stranger' },
+    { Name: 'Stonescar Stranger' },
+    { Name: 'Stonescar Banner' }
+  ]
+
+  it('returns nothing when nothing matches closely', () => {
+    expect(fuzzySearch('umbren death watcher', allCards)).toEqual({
+      Name: 'Umbren Deathwatcher'
+    })
+  })
+
+  it('returns the closest match', () => {
+    expect(fuzzySearch('umbren death watcher', allCards)).toEqual({
+      Name: 'Umbren Deathwatcher'
+    })
+  })
+
+  it('finds the best match of two', () => {
+    expect(fuzzySearch('dullist bling', allCards)).toEqual({
+      Name: "Duelist's Blade"
+    })
+  })
+
+  it('finds the best match of three', () => {
+    expect(fuzzySearch('somescone singer', allCards)).toEqual({
+      Name: 'Stonescar Stranger'
+    })
+  })
+
+  it('matches very malformed queries', () => {
+    expect(fuzzySearch('united darth stitcher', allCards)).toEqual({
+      Name: 'Umbren Deathwatcher'
+    })
   })
 })
 

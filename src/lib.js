@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const Fuse = require('fuse.js')
 
 const MAX_CARDS_TO_RETURN = 5
 
@@ -20,6 +21,7 @@ function requestedCards (query) {
   return _.uniq(results.map(sanitize).slice(0, MAX_CARDS_TO_RETURN))
 }
 
+// TODO: Extract searchers into new module
 function fetchUniqueName (name, cardDB) {
   if (name in cardDB) {
     return name
@@ -41,17 +43,43 @@ function sanitize (name) {
   return name
 }
 
-function urlsForCards (cards, cardDb) {
-  const urls = []
+// TODO: Extract searchers into new module
+function fuzzySearch (query, allCards) {
+  const fuse = new Fuse(allCards, {
+    shouldSort: true,
+    threshold: 0.5,
+    distance: 100,
+    maxPatternLength: 32,
+    minMatchCharLength: 1,
+    keys: ['Name']
+  })
+  const results = fuse.search(query)
+  if (results.count === 0) return null
+  return results[0]
+}
+
+function urlsForCards ({ cards, cardDb, allCards }) {
+  const matchingUrls = []
+  const queriesWithFuzzyMatches = []
   const errors = []
 
   cards.forEach(name => {
     const fullName = fetchUniqueName(name, cardDb)
-    if (fullName) urls.push(cardDb[fullName]['DetailsUrl'])
-    else errors.push(name)
+    if (fullName) {
+      matchingUrls.push(cardDb[fullName]['DetailsUrl'])
+      return
+    }
+
+    const maybeUrl = fuzzySearch(name, allCards)
+    if (maybeUrl) {
+      queriesWithFuzzyMatches.push({ query: name, maybeUrl })
+      return
+    }
+
+    errors.push(name)
   })
 
-  return { urls, errors }
+  return { matchingUrls, errors }
 }
 
 module.exports = {
@@ -59,5 +87,6 @@ module.exports = {
   requestedCards,
   fetchUniqueName,
   sanitize,
+  fuzzySearch,
   urlsForCards
 }
