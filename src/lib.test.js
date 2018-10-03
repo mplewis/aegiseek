@@ -157,20 +157,23 @@ describe('fuzzySearch', () => {
 describe('urlsForCards', () => {
   const cardDb = {
     'fire sigil': {
+      Name: 'Fire Sigil',
       DetailsUrl: 'firesigil.html'
     },
     'time sigil': {
+      Name: 'Time Sigil',
       DetailsUrl: 'timesigil.html'
     },
     'wisdom of the elders': {
+      Name: 'Wisdom of the Elders',
       DetailsUrl: 'wisdom.html'
     }
   }
 
   const allCards = [
-    { Name: 'Fire Sigil' },
-    { Name: 'Time Sigil' },
-    { Name: 'Wisdom of the Elders' }
+    { Name: 'Fire Sigil', DetailsUrl: 'firesigil.html' },
+    { Name: 'Time Sigil', DetailsUrl: 'timesigil.html' },
+    { Name: 'Wisdom of the Elders', DetailsUrl: 'wisdom.html' }
   ]
 
   describe('single fetch', () => {
@@ -212,7 +215,7 @@ describe('urlsForCards', () => {
       expect(urlsForCards({ queries, cardDb, allCards })).toEqual({
         matchingUrls: [],
         queriesWithFuzzyMatches: [
-          { query: 'fira signal', result: { Name: 'Fire Sigil' } }
+          { query: 'fira signal', name: 'Fire Sigil', url: 'firesigil.html' }
         ],
         errors: []
       })

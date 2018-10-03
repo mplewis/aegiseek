@@ -72,7 +72,11 @@ function urlsForCards ({ queries, cardDb, allCards }) {
 
     const result = fuzzySearch(query, allCards)
     if (result) {
-      queriesWithFuzzyMatches.push({ query: query, result })
+      queriesWithFuzzyMatches.push({
+        query: query,
+        name: result.Name,
+        url: result.DetailsUrl
+      })
       return
     }
 

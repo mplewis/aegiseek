@@ -11,7 +11,9 @@ function replyWithCards ({ cardDb, allCards, msgText }) {
   const { matchingUrls, queriesWithFuzzyMatches, errors } = results
 
   if (matchingUrls.length > 0) messages.push(matchingUrls.join(' '))
-  // TODO: show queriesWithFuzzyMatches
+  queriesWithFuzzyMatches.forEach(({ query, name, url }) =>
+    messages.push(`Could not find ${query}. Did you mean ${name}? ${url}`)
+  )
   if (errors.length > 0) {
     const s = errors.length === 1 ? '' : 's'
     messages.push(`Could not find any card${s} named ${errors.join(', ')}`)
