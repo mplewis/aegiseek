@@ -18,4 +18,19 @@ const bot = createBot({
   responsesForMessage: msg =>
     replyWithCards({ msgText: msg.content, cardDb, allCards })
 })
-bot.connect()
+
+let connected = false
+
+while (!connected) {
+  console.log('Attempting to connect')
+  bot.connect().then(
+    value => {
+      console.log('Bot connected successfully')
+      connected = true
+    },
+    error => {
+      console.log('Bot failed to connect, trying again')
+      console.log({ error })
+    }
+  )
+}
