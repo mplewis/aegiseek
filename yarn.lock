@@ -1260,14 +1260,14 @@ end-of-stream@^1.1.0:
   dependencies:
     once "^1.4.0"
 
-eris@^0.7.2:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/eris/-/eris-0.7.2.tgz#0484012e5d587f92db3870ada0eb16fb9f98781e"
+eris@^0.11.2:
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/eris/-/eris-0.11.2.tgz#a4adad72d795d64d71a74833ccf5adc4db0ad8c0"
   dependencies:
-    ws "^3.0.0"
+    ws "^7.2.1"
   optionalDependencies:
-    opusscript "^0.0.3"
-    tweetnacl "^1.0.0"
+    opusscript "^0.0.7"
+    tweetnacl "^1.0.1"
 
 error-ex@^1.2.0, error-ex@^1.3.1:
   version "1.3.2"
@@ -3602,9 +3602,9 @@ optionator@^0.8.1, optionator@^0.8.2:
     type-check "~0.3.2"
     wordwrap "~1.0.0"
 
-opusscript@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/opusscript/-/opusscript-0.0.3.tgz#ce46717fc8d6f901c5191e69485c889a036a8674"
+opusscript@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/opusscript/-/opusscript-0.0.7.tgz#7dd7ec55b302d26bf588e6fc3feb090b8c7da856"
 
 os-homedir@^1.0.0:
   version "1.0.2"
@@ -4750,9 +4750,9 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
 
-tweetnacl@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.0.tgz#713d8b818da42068740bf68386d0479e66fc8a7b"
+tweetnacl@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.1.tgz#2594d42da73cd036bd0d2a54683dd35a6b55ca17"
 
 type-check@~0.3.2:
   version "0.3.2"
@@ -4785,10 +4785,6 @@ uglify-js@^3.1.4:
   dependencies:
     commander "~2.20.3"
     source-map "~0.6.1"
-
-ultron@~1.1.0:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/ultron/-/ultron-1.1.1.tgz#9fe1536a10a664a65266a1e3ccf85fd36302bc9c"
 
 union-value@^1.0.0:
   version "1.0.0"
@@ -4966,19 +4962,15 @@ write@^0.2.1:
   dependencies:
     mkdirp "^0.5.1"
 
-ws@^3.0.0:
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-3.3.3.tgz#f1cf84fe2d5e901ebce94efaece785f187a228f2"
-  dependencies:
-    async-limiter "~1.0.0"
-    safe-buffer "~5.1.0"
-    ultron "~1.1.0"
-
 ws@^5.2.0:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/ws/-/ws-5.2.2.tgz#dffef14866b8e8dc9133582514d1befaf96e980f"
   dependencies:
     async-limiter "~1.0.0"
+
+ws@^7.2.1:
+  version "7.2.1"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.2.1.tgz#03ed52423cd744084b2cf42ed197c8b65a936b8e"
 
 xml-name-validator@^3.0.0:
   version "3.0.0"
