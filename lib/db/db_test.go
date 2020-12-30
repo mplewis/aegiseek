@@ -9,9 +9,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestAegiseek(t *testing.T) {
+func TestSuite(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "DB Suite")
+	RunSpecs(t, "Test Suite")
 }
 
 var cards = []model.Card{

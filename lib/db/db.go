@@ -7,6 +7,8 @@ import (
 	"github.com/mplewis/aegiseek/lib/model"
 )
 
+var wcMatch *regexp.Regexp
+
 // DB is a database that supports fuzzy searching of Eternal cards.
 type DB struct {
 	cards     []model.Card
@@ -19,8 +21,10 @@ func New(cards []model.Card, threshold int) DB {
 }
 
 func wordCount(ceil int, s string) int {
-	m, _ := regexp.Compile(`\S+`)
-	r := m.FindAllString(s, ceil)
+	if wcMatch == nil {
+		wcMatch = regexp.MustCompile(`\S+`)
+	}
+	r := wcMatch.FindAllString(s, ceil)
 	if r == nil {
 		return 0
 	}
