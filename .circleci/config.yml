@@ -1,29 +1,32 @@
-version: 2
-jobs:
+version: 2.1
+
+orbs:
+  docker: circleci/docker@1.5.0
+
+workflows:
+  version: 2
   build:
-    working_directory: ~/aegiseek
+    jobs:
+      - test:
+          filters:
+            tags:
+              only: /.*/
+      - docker/publish:
+          image: mplewis/discosay
+          tag: latest,<< pipeline.git.tag >>
+          update-description: true
+          requires:
+            - test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+
+jobs:
+  test:
     docker:
-      - image: node:13-buster-slim
+      - image: cimg/go:1.15
     steps:
       - checkout
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: Install project dependencies
-          command: yarn install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: Run unit tests
-          command: yarn test --coverage
-      - run:
-          name: Lint
-          command: yarn lint
-      - store_artifacts:
-          path: junit
-      - store_artifacts:
-          path: coverage
-      - store_test_results:
-          path: junit
+      - run: go test ./...
