@@ -7,14 +7,15 @@ import (
 	"time"
 
 	"github.com/mplewis/aegiseek/lib/model"
+	"github.com/rs/zerolog/log"
 )
 
-// Cards is a fetcher for the latest Eternal Warcry card data.
-type Cards struct {
+// Source is a fetcher for the latest Eternal Warcry card data.
+type Source struct {
 	Interval time.Duration
 	Target   string
 	OnError  func(error)
-	last     time.Time
+	expiry   time.Time
 	cards    []model.Card
 }
 
@@ -23,14 +24,15 @@ func New(
 	Interval time.Duration,
 	Target string,
 	OnError func(error),
-) *Cards {
-	c := &Cards{Interval, Target, OnError, time.Time{}, nil}
+) *Source {
+	c := &Source{Interval, Target, OnError, time.Time{}, nil}
 	c.refresh()
+	log.Debug().Msg("Initial refresh complete")
 	return c
 }
 
 // Get gets the parsed cards and queues a refresh if they are stale.
-func (c *Cards) Get() []model.Card {
+func (c *Source) Get() []model.Card {
 	if !c.fresh() {
 		go func() {
 			c.refresh()
@@ -47,12 +49,20 @@ func parse(raw []byte) ([]model.Card, error) {
 }
 
 // fresh returns true if the cards are fresh and false otherwise.
-func (c *Cards) fresh() bool {
-	return time.Now().After(c.last.Add(c.Interval))
+func (c *Source) fresh() bool {
+	now := time.Now()
+	fresh := now.Before(c.expiry)
+	log.Debug().
+		Interface("now", now).
+		Interface("expiry", c.expiry).
+		Bool("fresh", fresh).
+		Msg("Checking freshness")
+	return fresh
 }
 
 // refresh fetches the cards from the datasource and parses them.
-func (c *Cards) refresh() {
+func (c *Source) refresh() {
+	log.Debug().Msg("Refreshing")
 	resp, err := http.Get(c.Target)
 	if err != nil {
 		c.OnError(err)
@@ -69,5 +79,6 @@ func (c *Cards) refresh() {
 		return
 	}
 	c.cards = cards
-	c.last = time.Now()
+	c.expiry = time.Now().Add(c.Interval)
+	log.Debug().Interface("expiry", c.expiry).Msg("Refreshed")
 }

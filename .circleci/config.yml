@@ -12,7 +12,7 @@ workflows:
             tags:
               only: /.*/
       - docker/publish:
-          image: mplewis/discosay
+          image: mplewis/aegiseek
           tag: latest,<< pipeline.git.tag >>
           update-description: true
           requires:
