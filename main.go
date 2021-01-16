@@ -115,5 +115,9 @@ func respond(msg string) *string {
 	if len(notFound) > 0 {
 		notFoundMsg = fmt.Sprintf("Sorry, I didn't find these cards: %s", strings.Join(notFound, ", "))
 	}
-	return strPtr(notFoundMsg + "\n" + strings.Join(resps, "\n"))
+	resp := strings.TrimSpace(notFoundMsg + "\n" + strings.Join(resps, "\n"))
+	if resp == "" {
+		return nil
+	}
+	return strPtr(resp)
 }
