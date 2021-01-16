@@ -101,21 +101,29 @@ func connect(token string, handler func(*discordgo.Session, *discordgo.MessageCr
 }
 
 func respond(msg string) *string {
+	reqs := message.Parse(msg)
+	if len(reqs) == 0 {
+		return nil
+	}
+
 	db := datasource.Get()
 	notFound := []string{}
-	resps := []string{}
-	for _, req := range message.Parse(msg) {
+	found := []string{}
+	for _, req := range reqs {
 		if result := db.Search(req); result == nil {
 			notFound = append(notFound, req)
 		} else {
-			resps = append(resps, result.DetailsURL)
+			found = append(found, result.DetailsURL)
 		}
 	}
+
+	foundMsg := strings.Join(found, "\n")
 	notFoundMsg := ""
 	if len(notFound) > 0 {
 		notFoundMsg = fmt.Sprintf("Sorry, I didn't find these cards: %s", strings.Join(notFound, ", "))
 	}
-	resp := strings.TrimSpace(notFoundMsg + "\n" + strings.Join(resps, "\n"))
+
+	resp := strings.TrimSpace(strings.Join([]string{notFoundMsg, foundMsg}, "\n"))
 	if resp == "" {
 		return nil
 	}
