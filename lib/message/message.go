@@ -7,7 +7,7 @@ var parser *regexp.Regexp
 // Parse parses an incoming Discord message and returns a list of requested cards.
 func Parse(msg string) []string {
 	if parser == nil {
-		parser = regexp.MustCompile(`{{(\w+(\s+\w+)*)}}`)
+		parser = regexp.MustCompile(`{{([^}]+)}}`)
 	}
 	matches := parser.FindAllStringSubmatch(msg, -1)
 	if matches == nil {

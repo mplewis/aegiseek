@@ -21,7 +21,9 @@ var _ = Describe("message", func() {
 			Expect(message.Parse(
 				"Then play {{Fire Sigil}} and {{Time Sigil}} followed by " +
 					"{{Watson of the Elder}}, {{Ancestral Recall}}, and {{Emrakul, the Aeons Torn}}",
-			)).To(Equal([]string{"Fire Sigil", "Time Sigil", "Watson of the Elder", "Ancestral Recall"}))
+			)).To(Equal([]string{
+				"Fire Sigil", "Time Sigil", "Watson of the Elder", "Ancestral Recall", "Emrakul, the Aeons Torn",
+			}))
 		})
 	})
 })
