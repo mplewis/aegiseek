@@ -6,39 +6,42 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/mplewis/aegiseek/lib/db"
 	"github.com/mplewis/aegiseek/lib/model"
 	"github.com/rs/zerolog/log"
 )
 
 // Source is a fetcher for the latest Eternal Warcry card data.
 type Source struct {
-	Interval time.Duration
-	Target   string
-	OnError  func(error)
-	expiry   time.Time
-	cards    []model.Card
+	Interval  time.Duration
+	Target    string
+	Threshold int
+	OnError   func(error)
+	expiry    time.Time
+	dbase     *db.DB
 }
 
 // New builds a card fetcher datasource with the specified interval and performs the initial fetch.
 func New(
 	Interval time.Duration,
 	Target string,
+	Threshold int,
 	OnError func(error),
 ) *Source {
-	c := &Source{Interval, Target, OnError, time.Time{}, nil}
+	c := &Source{Interval, Target, Threshold, OnError, time.Time{}, nil}
 	c.refresh()
 	log.Debug().Msg("Initial refresh complete")
 	return c
 }
 
 // Get gets the parsed cards and queues a refresh if they are stale.
-func (c *Source) Get() []model.Card {
+func (c *Source) Get() *db.DB {
 	if !c.fresh() {
 		go func() {
 			c.refresh()
 		}()
 	}
-	return c.cards
+	return c.dbase
 }
 
 // parse parses the Eternal Warcry card JSON into Cards.
@@ -78,7 +81,8 @@ func (c *Source) refresh() {
 		c.OnError(err)
 		return
 	}
-	c.cards = cards
+	db := db.New(cards, c.Threshold)
+	c.dbase = &db
 	c.expiry = time.Now().Add(c.Interval)
 	log.Debug().Interface("expiry", c.expiry).Msg("Refreshed")
 }
