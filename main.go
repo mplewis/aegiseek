@@ -1,18 +1,55 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"os/signal"
+	"strings"
+	"syscall"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/mplewis/aegiseek/lib/message"
+	"github.com/mplewis/aegiseek/lib/source"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
-var defaultDatasource = "https://eternalwarcry.com/content/cards/eternal-cards.json"
-var refreshInterval = 24 * time.Hour
+const (
+	defaultDatasource = "https://eternalwarcry.com/content/cards/eternal-cards.json"
+	refreshInterval   = 24 * time.Hour
+	threshold         = 3
+)
 
-func main() {
+var (
+	datasource *source.Source
+)
+
+func env(key string) string {
+	val := os.Getenv(key)
+	if val == "" {
+		log.Fatal().Str("key", key).Msg("Missing mandatory environment variable")
+	}
+	return val
+}
+
+func ensure(err error, task string) {
+	if err != nil {
+		log.Fatal().Err(err).Msg(fmt.Sprintf("Error %s", task))
+	}
+}
+
+func chill() {
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
+}
+
+func strPtr(s string) *string {
+	return &s
+}
+
+func zerologInit() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	if os.Getenv("DEBUG") != "" {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
@@ -20,16 +57,63 @@ func main() {
 	if os.Getenv("DEVELOPMENT") != "" {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
 	}
+}
 
-	datasource := os.Getenv("DATASOURCE")
-	if datasource == "" {
-		datasource = defaultDatasource
+func init() {
+	zerologInit()
+	ds := os.Getenv("DATASOURCE")
+	if ds == "" {
+		ds = defaultDatasource
 	}
+	datasource = source.New(refreshInterval, ds, threshold, func(err error) {
+		log.Fatal().Err(err).Str("datasource", ds).Msg("Error fetching cards from datasource")
+	})
+}
 
-	// s := source.New(refreshInterval, datasource, func(err error) {
-	// 	log.Fatal().Err(err).Str("datasource", datasource).Msg("Error fetching cards from datasource")
-	// })
+func main() {
+	sess := connect(env("AUTH_TOKEN"),
+		func(s *discordgo.Session, m *discordgo.MessageCreate) {
+			if m.Author.ID == s.State.User.ID {
+				return
+			}
+			resp := respond(m.Content)
+			if resp == nil {
+				return
+			}
+			log.Info().Str("inUser", m.Author.Username).Str("inMsg", m.Message.Content).Str("message", *resp).Send()
+			s.ChannelMessageSend(m.ChannelID, *resp)
+		},
+	)
+	chill()
+	log.Info().Msg("Shutting down")
+	sess.Close()
+}
 
-	answers := message.Parse("Then play {{Fire Sigil}} and {{Time Sigil}} followed by {{Watson of the Elder}}, {{Ancestral Recall}}, and {{Emrakul, the Aeons Torn}}")
-	log.Info().Interface("answers", answers).Send()
+func connect(token string, handler func(*discordgo.Session, *discordgo.MessageCreate)) *discordgo.Session {
+	sess, err := discordgo.New("Bot " + token)
+	ensure(err, "creating session")
+	sess.AddHandler(handler)
+	ensure(sess.Open(), "connecting to Discord")
+	me, err := sess.User("@me")
+	ensure(err, "getting self details")
+	log.Info().Str("username", me.Username).Msg("Connected to Discord")
+	return sess
+}
+
+func respond(msg string) *string {
+	db := datasource.Get()
+	notFound := []string{}
+	resps := []string{}
+	for _, req := range message.Parse(msg) {
+		if result := db.Search(req); result == nil {
+			notFound = append(notFound, req)
+		} else {
+			resps = append(resps, result.DetailsURL)
+		}
+	}
+	notFoundMsg := ""
+	if len(notFound) > 0 {
+		notFoundMsg = fmt.Sprintf("Sorry, I didn't find these cards: %s", strings.Join(notFound, ", "))
+	}
+	return strPtr(notFoundMsg + "\n" + strings.Join(resps, "\n"))
 }
